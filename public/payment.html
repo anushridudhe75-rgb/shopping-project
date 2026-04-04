@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Payment</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<h2 class="page-title">Select Payment Method 💳</h2>
+<button onclick="toggleDarkMode()">🌙</button>
+
+<div class="form-container payment-box">
+
+  <div class="payment-option cod" onclick="cod()">
+    <h3>💵 Cash on Delivery</h3>
+    <p>Pay when your order arrives</p>
+  </div>
+
+  <div class="payment-option online" onclick="online()">
+    <h3>💳 Online Payment</h3>
+    <p>Pay securely using card / UPI</p>
+  </div>
+
+</div>
+
+<script>
+  function toggleDarkMode() {
+  document.body.classList.toggle("dark");
+
+  if (document.body.classList.contains("dark")) {
+    localStorage.setItem("theme", "dark");
+  } else {
+    localStorage.setItem("theme", "light");
+  }
+}
+// Apply theme on page load
+window.onload = function () {
+  const theme = localStorage.getItem("theme");
+
+  if (theme === "dark") {
+    document.body.classList.add("dark");
+  }
+
+  // keep your existing functions working
+  if (typeof loadProducts === "function") loadProducts();
+  if (typeof loadCart === "function") loadCart();
+  if (typeof loadWishlist === "function") loadWishlist();
+};
+const API = "http://localhost:5000/api";
+
+async function cod() {
+  const userId = localStorage.getItem("userId");
+  const address = JSON.parse(localStorage.getItem("address"));
+
+  if (!address) {
+    alert("Please enter address first ❗");
+    window.location = "address.html";
+    return;
+  }
+
+  // Save order in DB
+  await fetch(`${API}/orders/place`, {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      userId,
+      address,
+      paymentMethod: "COD"
+    })
+  });
+
+  alert("Order Placed Successfully 🎉");
+  window.location = "home.html";
+}
+
+function online() {
+  window.location = "checkout.html";
+}
+</script>
+
+</body>
+</html>

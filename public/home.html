@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Shopping Home</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- HEADER PANEL -->
+<header class="main-header">
+
+  <!-- LEFT: Heading -->
+  <div class="logo">📚 Book Store</div>
+
+  <!-- CENTER: Search -->
+  <div class="search-bar">
+    <input type="text" id="search" placeholder="Search Books...">
+    <button onclick="loadProducts()">🔍</button>
+  </div>
+
+  <!-- RIGHT: Icons -->
+  <div class="header-icons">
+    <a href="cart.html">🛒</a>
+    <a href="wishlist.html">❤️</a>
+    <button onclick="toggleDarkMode()">🌙</button>
+  </div>
+
+</header>
+
+<!-- OFFER RUNNING BAR -->
+<div class="offer-bar">
+  <div class="offer-text">
+    🔥 50% OFF &nbsp;&nbsp;&nbsp;
+    🎉 Buy 2 Get 1 Free &nbsp;&nbsp;&nbsp;
+    🚚 Free Delivery &nbsp;&nbsp;&nbsp;
+    💳 Extra 10% OFF
+  </div>
+</div>
+
+<!-- PRODUCTS -->
+<h2 class="section-title">📘 English Books</h2>
+<div id="english" class="product-grid"></div>
+
+<h2 class="section-title">📗 Hindi Books</h2>
+<div id="hindi" class="product-grid"></div>
+
+<h2 class="section-title">📙 Marathi Books</h2>
+<div id="marathi" class="product-grid"></div>
+
+<footer>
+  <p>© 2026 Book Store | Made by Anushri 💻</p>
+</footer>
+
+<script src="js/app.js"></script>
+
+<script>
+/* ✅ DARK MODE TOGGLE */
+function toggleDarkMode() {
+  document.body.classList.toggle("dark");
+
+  if (document.body.classList.contains("dark")) {
+    localStorage.setItem("theme", "dark");
+  } else {
+    localStorage.setItem("theme", "light");
+  }
+}
+
+/* ✅ APPLY THEME + LOAD PRODUCTS */
+window.onload = function () {
+  const theme = localStorage.getItem("theme");
+
+  if (theme === "dark") {
+    document.body.classList.add("dark");
+  }
+
+  loadProducts(); // important
+};
+</script>
+
+</body>
+</html>

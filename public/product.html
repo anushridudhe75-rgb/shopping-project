@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Product Details</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<h2 style="text-align:center;">Book Details 📖</h2>
+
+<div id="product" style="text-align:center;"></div>
+
+<script>
+const API = "http://localhost:5000/api";
+
+// ✅ Get ID from URL
+const params = new URLSearchParams(window.location.search);
+const id = params.get("id");
+
+// ❌ If no ID
+if (!id) {
+  document.getElementById("product").innerHTML =
+    "<h3>No product selected ❌</h3>";
+} else {
+  loadProduct();
+}
+
+async function loadProduct() {
+  try {
+    const res = await fetch(`${API}/products`);
+    const data = await res.json();
+
+    // find product
+    const p = data.find(item => item._id === id);
+
+    if (!p) {
+      document.getElementById("product").innerHTML =
+        "<h3>Product not found ❌</h3>";
+      return;
+    }
+
+    document.getElementById("product").innerHTML = `
+      <div class="card" style="max-width:300px;margin:auto;">
+        <img src="${p.image?.[0] || 'images/book1.jpg'}">
+        <h3>${p.name}</h3>
+        <p>⭐ ${p.rating}</p>
+        <p>₹${p.price}</p>
+
+        <button onclick="addToCart('${p._id}')">Add to Cart 🛒</button>
+        <button onclick="addToWishlist('${p._id}')">❤️ Wishlist</button>
+      </div>
+    `;
+  } catch (error) {
+    document.getElementById("product").innerHTML =
+      "<h3>Error loading product ❌</h3>";
+  }
+}
+
+// ✅ Cart
+async function addToCart(productId) {
+  await fetch(`${API}/cart/add`, {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      userId: localStorage.getItem("userId"),
+      productId,
+      quantity: 1
+    })
+  });
+
+  alert("Added to Cart ✅");
+}
+
+// ✅ Wishlist
+async function addToWishlist(productId) {
+  await fetch(`${API}/wishlist/add`, {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      userId: localStorage.getItem("userId"),
+      productId
+    })
+  });
+
+  alert("Added to Wishlist ❤️");
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cart</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="cart-header">
+  <h1>Your Cart 🛒</h1>
+  <button class="theme-btn" onclick="toggleDarkMode()">🌙</button>
+</div>
+
+<!-- CART ITEMS -->
+<div id="cart" class="product-grid"></div>
+
+<!-- SUMMARY -->
+<div class="cart-summary">
+  <h2 id="total"></h2>
+  <button class="checkout-btn" onclick="goToAddress()">Proceed 🚚</button>
+</div>
+
+<script>
+let cartCount = 0;
+
+function toggleDarkMode() {
+  document.body.classList.toggle("dark");
+
+  if (document.body.classList.contains("dark")) {
+    localStorage.setItem("theme", "dark");
+  } else {
+    localStorage.setItem("theme", "light");
+  }
+}
+
+// Apply theme + load cart
+window.onload = function () {
+  const theme = localStorage.getItem("theme");
+
+  if (theme === "dark") {
+    document.body.classList.add("dark");
+  }
+
+  loadCart();
+};
+
+const API = "http://localhost:5000/api";
+const userId = localStorage.getItem("userId");
+
+async function loadCart() {
+  const res = await fetch(`${API}/cart/${userId}`);
+  const data = await res.json();
+
+  let html = "";
+  let total = 0;
+
+  cartCount = data.length;
+
+  data.forEach(item => {
+    total += item.product.price * item.quantity;
+
+    html += `
+      <div class="card">
+        <img src="${item.product.image[0]}">
+
+        <h3>${item.product.name}</h3>
+        <p class="price">₹${item.product.price}</p>
+
+        <div class="qty">
+          <button onclick="changeQty('${item._id}', -1)">-</button>
+          <span>${item.quantity}</span>
+          <button onclick="changeQty('${item._id}', 1)">+</button>
+        </div>
+
+        <button onclick="deleteItem('${item._id}')">Remove ❌</button>
+      </div>
+    `;
+  });
+
+  // ✅ Improved Empty UI
+  document.getElementById("cart").innerHTML =
+    html || `
+      <div class="empty-cart">
+        <div class="empty-icon">📚</div>
+        <p>Your cart is empty 😢</p>
+      </div>
+    `;
+
+  document.getElementById("total").innerText = "Total: ₹" + total;
+
+  // Disable button if empty
+  const btn = document.querySelector(".checkout-btn");
+
+  if (cartCount === 0) {
+    btn.disabled = true;
+    btn.style.opacity = "0.5";
+  } else {
+    btn.disabled = false;
+    btn.style.opacity = "1";
+  }
+}
+
+async function deleteItem(id) {
+  await fetch(`${API}/cart/${id}`, { method: "DELETE" });
+  loadCart();
+}
+
+async function changeQty(id, change) {
+  const res = await fetch(`${API}/cart/${userId}`);
+  const data = await res.json();
+
+  const item = data.find(i => i._id === id);
+  let newQty = item.quantity + change;
+
+  if (newQty < 1) newQty = 1;
+
+  await fetch(`${API}/cart/${id}`, {
+    method: "PUT",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({ quantity: newQty })
+  });
+
+  loadCart();
+}
+
+function goToAddress() {
+  if (cartCount === 0) {
+    alert("Your cart is empty 😢");
+    return;
+  }
+
+  window.location = "address.html";
+}
+</script>
+
+</body>
+</html>

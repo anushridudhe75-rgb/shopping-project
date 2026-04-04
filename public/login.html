@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="main-header">
+  <h1>Welcome to Shopping Home</h1>
+  <button onclick="toggleDarkMode()">🌙</button>
+</header>
+<div class="container">
+  <div class="form-box">
+
+    <h2>Login 🔐</h2>
+    <input id="email" placeholder="Email">
+    <input id="password" type="password" placeholder="Password">
+
+    <button onclick="login()">Login</button>
+
+    <p>Don't have account? <a href="register.html">Register</a></p>
+
+  </div>
+</div>
+
+<script>
+  function toggleDarkMode() {
+  document.body.classList.toggle("dark");
+
+  if (document.body.classList.contains("dark")) {
+    localStorage.setItem("theme", "dark");
+  } else {
+    localStorage.setItem("theme", "light");
+  }
+}
+// Apply theme on page load
+window.onload = function () {
+  const theme = localStorage.getItem("theme");
+
+  if (theme === "dark") {
+    document.body.classList.add("dark");
+  }
+
+  // keep your existing functions working
+  if (typeof loadProducts === "function") loadProducts();
+  if (typeof loadCart === "function") loadCart();
+  if (typeof loadWishlist === "function") loadWishlist();
+};
+async function login() {
+  const res = await fetch("/api/auth/login", {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({
+      email: email.value,
+      password: password.value
+    })
+  });
+
+  const data = await res.json();
+  localStorage.setItem("userId", data._id);
+  window.location = "home.html";
+}
+</script>
+
+</body>
+</html>
