@@ -1,38 +1,27 @@
 📚 Book Store Website
 
-📌 Project Overview
+This is a full-stack book store web application developed using Node.js and MongoDB.
 
-This is a full-stack Book Store web application developed using Node.js, Express, and MongoDB. The system allows users to browse, search, and purchase books easily.
+Features
 
----
+- Search Books
+- Add to Cart
+- Wishlist
+- Checkout System
+- Dark Mode
 
-🚀 Features
-
-- 🔍 Search Books
-- 🛒 Add to Cart
-- ❤️ Wishlist
-- 🌙 Dark Mode
-- 💳 Checkout (COD & Online)
-
----
-
-🛠 Technologies Used
+Technologies Used
 
 - HTML, CSS, JavaScript
 - Node.js, Express.js
-- MongoDB Atlas
+- MongoDB
 
----
+How to Run
 
-⚙️ How to Run
+1. npm install
+2. node server.js
+3. Open http://localhost:5000
 
-1. Install Node.js
-2. Run "npm install"
-3. Run "node server.js"
-4. Open http://localhost:5000
-
----
-
-👩‍💻 Author
+Author
 
 Anushri Dudhe
