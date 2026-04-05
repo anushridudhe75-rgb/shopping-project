@@ -6,45 +6,67 @@
 </head>
 <body>
 
-<h2 style="text-align:center;">Book Details 📖</h2>
+<!-- HEADER -->
+<div class="cart-header">
+  <h2>Book Details 📖</h2>
+  <button onclick="toggleDarkMode()">🌙</button>
+</div>
 
-<div id="product" style="text-align:center;"></div>
+<!-- PRODUCT -->
+<div id="product" class="product-grid"></div>
 
 <script>
 const API = "http://localhost:5000/api";
 
-// ✅ Get ID from URL
-const params = new URLSearchParams(window.location.search);
-const id = params.get("id");
+// 🌙 DARK MODE
+function toggleDarkMode() {
+  document.body.classList.toggle("dark");
 
-// ❌ If no ID
+  if (document.body.classList.contains("dark")) {
+    localStorage.setItem("theme", "dark");
+  } else {
+    localStorage.setItem("theme", "light");
+  }
+}
+
+// Apply theme
+window.onload = function () {
+  const theme = localStorage.getItem("theme");
+  if (theme === "dark") {
+    document.body.classList.add("dark");
+  }
+};
+
+// ✅ GET PRODUCT ID
+const id = new URLSearchParams(window.location.search).get("id");
+
 if (!id) {
   document.getElementById("product").innerHTML =
-    "<h3>No product selected ❌</h3>";
+    "<h2 style='text-align:center;'>No product selected ❌</h2>";
 } else {
   loadProduct();
 }
 
+// ✅ LOAD PRODUCT
 async function loadProduct() {
   try {
     const res = await fetch(`${API}/products`);
     const data = await res.json();
 
-    // find product
-    const p = data.find(item => item._id === id);
+    const p = data.find(x => x._id === id);
 
     if (!p) {
       document.getElementById("product").innerHTML =
-        "<h3>Product not found ❌</h3>";
+        "<h2 style='text-align:center;'>Product not found ❌</h2>";
       return;
     }
 
     document.getElementById("product").innerHTML = `
       <div class="card" style="max-width:300px;margin:auto;">
         <img src="${p.image?.[0] || 'images/book1.jpg'}">
-        <h3>${p.name}</h3>
+        <h2>${p.name}</h2>
         <p>⭐ ${p.rating}</p>
-        <p>₹${p.price}</p>
+        <p class="price">₹${p.price}</p>
 
         <button onclick="addToCart('${p._id}')">Add to Cart 🛒</button>
         <button onclick="addToWishlist('${p._id}')">❤️ Wishlist</button>
@@ -52,17 +74,24 @@ async function loadProduct() {
     `;
   } catch (error) {
     document.getElementById("product").innerHTML =
-      "<h3>Error loading product ❌</h3>";
+      "<h2 style='text-align:center;'>Error loading product ❌</h2>";
   }
 }
 
-// ✅ Cart
+// ✅ ADD TO CART
 async function addToCart(productId) {
+  const userId = localStorage.getItem("userId");
+
+  if (!userId) {
+    alert("Please login first ❗");
+    return;
+  }
+
   await fetch(`${API}/cart/add`, {
     method: "POST",
     headers: {"Content-Type": "application/json"},
     body: JSON.stringify({
-      userId: localStorage.getItem("userId"),
+      userId,
       productId,
       quantity: 1
     })
@@ -71,13 +100,20 @@ async function addToCart(productId) {
   alert("Added to Cart ✅");
 }
 
-// ✅ Wishlist
+// ✅ ADD TO WISHLIST
 async function addToWishlist(productId) {
+  const userId = localStorage.getItem("userId");
+
+  if (!userId) {
+    alert("Please login first ❗");
+    return;
+  }
+
   await fetch(`${API}/wishlist/add`, {
     method: "POST",
     headers: {"Content-Type": "application/json"},
     body: JSON.stringify({
-      userId: localStorage.getItem("userId"),
+      userId,
       productId
     })
   });
