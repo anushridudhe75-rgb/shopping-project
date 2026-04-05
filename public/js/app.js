@@ -1,12 +1,31 @@
 const API = "http://localhost:5000/api";
 
+// 🌙 DARK MODE
 function toggleDarkMode() {
   document.body.classList.toggle("dark");
-}
-async function loadProducts() {
-  const search = document.getElementById("search").value;
 
-  // Loading
+  if (document.body.classList.contains("dark")) {
+    localStorage.setItem("theme", "dark");
+  } else {
+    localStorage.setItem("theme", "light");
+  }
+}
+
+// Apply theme on load
+window.onload = function () {
+  const theme = localStorage.getItem("theme");
+
+  if (theme === "dark") {
+    document.body.classList.add("dark");
+  }
+
+  loadProducts(); // load products automatically
+};
+
+// 🔍 LOAD PRODUCTS
+async function loadProducts() {
+  const search = document.getElementById("search")?.value || "";
+
   document.getElementById("english").innerHTML = "Loading...";
   document.getElementById("hindi").innerHTML = "";
   document.getElementById("marathi").innerHTML = "";
@@ -32,7 +51,7 @@ async function loadProducts() {
         </div>
       `;
 
-      // ✅ CATEGORY BASED LOGIC (FINAL FIX)
+      // ✅ CATEGORY BASED DISPLAY
       if (p.category === "english") {
         eng += card;
       } else if (p.category === "hindi") {
@@ -53,6 +72,64 @@ async function loadProducts() {
 
   } catch (error) {
     console.log(error);
-    document.getElementById("english").innerHTML = "Error loading products ❌";
+    document.getElementById("english").innerHTML =
+      "Error loading products ❌";
+  }
+}
+
+// 🛒 ADD TO CART
+async function addToCart(productId) {
+  const userId = localStorage.getItem("userId");
+
+  if (!userId) {
+    alert("Please login first ❗");
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API}/cart/add`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        userId,
+        productId,
+        quantity: 1
+      })
+    });
+
+    const data = await res.text();
+    alert(data || "Added to Cart ✅");
+
+  } catch (err) {
+    console.log(err);
+    alert("Error adding to cart ❌");
+  }
+}
+
+// ❤️ ADD TO WISHLIST
+async function addToWishlist(productId) {
+  const userId = localStorage.getItem("userId");
+
+  if (!userId) {
+    alert("Please login first ❗");
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API}/wishlist/add`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        userId,
+        productId
+      })
+    });
+
+    const data = await res.text();
+    alert(data || "Added to Wishlist ❤️");
+
+  } catch (err) {
+    console.log(err);
+    alert("Error adding to wishlist ❌");
   }
 }
