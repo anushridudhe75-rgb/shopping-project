@@ -1,4 +1,4 @@
-const API = "http://localhost:5000/api";
+const API = "https://shopping-project-ukyr.onrender.com/api";
 
 // 🌙 DARK MODE
 function toggleDarkMode() {
