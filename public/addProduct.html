@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Add Product</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="cart-header">
+  <h1>Add Product 🛍️</h1>
+  <button class="theme-btn" onclick="toggleDarkMode()">🌙</button>
+</div>
+
+<!-- MESSAGE BOX -->
+<div id="msgBox" class="msg-box"></div>
+
+<!-- FORM -->
+<div class="form-container">
+
+  <input id="name" placeholder="Product Name">
+  <input id="price" placeholder="Price">
+  <input id="size" placeholder="Size">
+  <input id="image" placeholder="Image name (example: book1.jpg)">
+  <input id="rating" placeholder="Rating">
+
+  <button onclick="addProduct()">Add Product ➕</button>
+
+</div>
+
+<script>
+const API = "https://shopping-project-ukyr.onrender.com/api"; // ✅ IMPORTANT
+
+function toggleDarkMode() {
+  document.body.classList.toggle("dark");
+
+  if (document.body.classList.contains("dark")) {
+    localStorage.setItem("theme", "dark");
+  } else {
+    localStorage.setItem("theme", "light");
+  }
+}
+
+// Apply theme
+window.onload = function () {
+  const theme = localStorage.getItem("theme");
+
+  if (theme === "dark") {
+    document.body.classList.add("dark");
+  }
+};
+
+// SHOW MESSAGE
+function showMessage(msg, type) {
+  const box = document.getElementById("msgBox");
+
+  box.innerText = msg;
+  box.style.display = "block";
+
+  box.style.background = (type === "success") ? "#4CAF50" : "#f44336";
+
+  setTimeout(() => {
+    box.style.display = "none";
+  }, 3000);
+}
+
+// ADD PRODUCT
+async function addProduct() {
+  const name = document.getElementById("name").value;
+  const price = document.getElementById("price").value;
+  const size = document.getElementById("size").value;
+  const image = document.getElementById("image").value;
+  const rating = document.getElementById("rating").value;
+
+  if (!name || !price || !image) {
+    showMessage("Please fill all required fields ❗", "error");
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API}/products/add`, { // ✅ FIXED
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({
+        name,
+        price,
+        size,
+        image: ["images/" + image],
+        rating
+      })
+    });
+
+    const data = await res.text();
+    console.log(data); // debug
+
+    showMessage("✅ Product Added Successfully!", "success");
+
+    // clear inputs
+    document.querySelectorAll("input").forEach(i => i.value = "");
+
+  } catch (error) {
+    console.error(error);
+    showMessage("❌ Error adding product", "error");
+  }
+}
+</script>
+
+</body>
+</html>
