@@ -28,10 +28,7 @@ app.get("/test", (req, res) => {
   res.send("Server working");
 });
 
-
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "home.html"));
-});
+app.use(express.static(path.join(__dirname, "public")));
 
 // Server Start
 const PORT = process.env.PORT || 5000;
