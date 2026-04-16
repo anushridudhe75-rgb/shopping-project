@@ -13,7 +13,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Static folder (for images, css, js)
+// Static folder
 app.use(express.static(path.join(__dirname, "public")));
 
 // API Routes
@@ -21,13 +21,16 @@ app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/products", require("./routes/productRoutes"));
 app.use("/api/cart", require("./routes/cartRoutes"));
 app.use("/api/wishlist", require("./routes/wishlistRoutes"));
-
-// ✅ NEW: Orders Route
 app.use("/api/orders", require("./routes/orderRoutes"));
 
 // Test Route
 app.get("/test", (req, res) => {
   res.send("Server working");
+});
+
+
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "home.html"));
 });
 
 // Server Start
