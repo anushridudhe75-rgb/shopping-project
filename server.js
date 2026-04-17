@@ -12,26 +12,28 @@ const app = express();
 // Middleware
 app.use(cors());
 app.use(express.json());
-// Serve static files
+
+// ✅ Serve static files
 app.use(express.static(path.join(__dirname, "public")));
 
-// API routes
+// ✅ API Routes
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/products", require("./routes/productRoutes"));
 app.use("/api/cart", require("./routes/cartRoutes"));
 app.use("/api/wishlist", require("./routes/wishlistRoutes"));
 app.use("/api/orders", require("./routes/orderRoutes"));
 
-// Test route
+// ✅ Test route
 app.get("/test", (req, res) => {
   res.send("Server working");
 });
 
-// Server frontend
+// ✅ VERY IMPORTANT (frontend routing)
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
-// START SERVER 
+
+// ✅ SERVER START (MUST BE LAST)
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
